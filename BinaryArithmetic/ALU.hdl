@@ -45,17 +45,29 @@ CHIP ALU {
     Mux16(a=y, b[0..15]=false, sel=zy, out=oney);
     Not16(in=onex, out=zeroOnex);
     Not16(in=oney, out=zeroOney);
-    Mux16(a=onex, b=zeroOnex, sel=nx, out[0..15]=2x);
-    Mux16(a[0..15]=1y, b[0..15]=zero1y, sel=ny, out[0..15]=2y);
-    Add16(a[0..15]=2x, b[0..15]=2y, out[0..15]=xPLUSy);
-    And16(a[0..15]=2x, b[0..15]=2y, out[0..15]=xANDy);
-    Mux16(a[0..15]=xANDy, b[0..15]=xPLUSy, sel=f, out[0..15]=1out);
-    Not16(in[0..15]=1out, out[0..15]=notOut);
-    Mux16(a[0..15]=1out, b[0..15]=notOut, sel=no, out[0..15]=2out);
-    Or16Way(in[0..15]=2out, out=test1);
-    Not(in=test1, out=zr);
-    And16(a[0..15]=2out, b[0..15]=true, out[15]=ng, out[0..14]=drop);
-    Or16(a[0..15]=2out, b[0..15]=true, out[0..15]=out);
+
+    Mux16(a=onex, b=zeroOnex, sel=nx, out=twox);
+
+    Mux16(a=oney, b=zeroOney, sel=ny, out=twoy);
+
+    Add16(a=twox, b=twoy, out=xPLUSy);
+    And16(a=twox, b=twoy, out=xANDy);
+
+    Mux16(a=xANDy, b=xPLUSy, sel=f, out=OneOut);
+
+    Not16(in=OneOut, out=notOut);
+    Mux16(a=OneOut, b=notOut, sel=no, out=TwoOut);
+
+
+    Or16Way(in=TwoOut, out=test);
+    Not(in=test, out=zr);
+    
+    Or16(a=TwoOut, b[0..15]=false, out[15]=ng, out[0..14]=drop);
+    
+    Or16(a=TwoOut, b[0..15]=false, out=out);
+    
+    ////And16(a=TwoOut, b[0..15]=true, out[15]=ng, out[0..14]=drop);
+    ////Or16(a=TwoOut, b[0..15]=false, out=out);
     
     //// Replace this comment with your code.
 }
